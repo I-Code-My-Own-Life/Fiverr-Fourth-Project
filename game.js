@@ -18,29 +18,19 @@ let car;
 let carVelx = 3.5;
 let carVely = 3.5;
 let carRotationAngle = 10;
+let finishImg;
+let finish;
+let movingUp = false;
+let movingDown = false;
 // Preload function is used to load all the sound and the images. It is ran before the setup and draw functions : 
 function preload(){
     // This txt variable is our data that we are going to read from the track.txt file :
     txt = loadStrings("track.txt")
     // Loading the images : 
-    tileImg = loadImage("track11.png");
-    carImg = loadImage("carsprite.png");
-    grassImg = loadImage("grass2.png");
-}
-class Car{
-    constructor(img,x,y,width,height){
-        this.img = img;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-    draw(){
-
-    }
-    race(){
-        this.draw();
-    }
+    tileImg = loadImage("track.png");
+    carImg = loadImage("car.png");
+    grassImg = loadImage("grass.png");
+    finishImg = loadImage('finishline.jpeg')
 }
 // Our setup function which runs only once : 
 function setup(){
@@ -62,7 +52,8 @@ function setup(){
 	grass.w = grassWidth;
 	grass.h = grassHeight; 
     grass.addImage("normal",grassImg)
-    grass.collider = "static"
+    // grass.collider = "static"
+    grass.collider = "none"
 	grass.tile = '0';
     // Creating our tiles : 
     tiles = new Group();
@@ -71,6 +62,13 @@ function setup(){
     tiles.addImage("normal",tileImg)
     tiles.collider = "none"
 	tiles.tile = '1';
+    // Creating our finish/start line : 
+    finish = new Group();
+    finish.w = 20;
+    finish.h = 50;
+    finish.addImage("normal",finishImg) 
+    finish.collider = "static"
+    finish.tile = "2"
     // Displaying our tiles on the screen here :
     new Tiles(
 		mapConfig,
@@ -79,8 +77,8 @@ function setup(){
 		tileWidth - (tileWidth / 2) -40,
 		tileHeight + 5,
 	);
-    car = createSprite(210, height/2, 40, 10);
-    car.collider = "dynamic"
+    car = createSprite(finish[0].x, finish[0].y - 50, 40, 10);
+    // car.collider = "dynamic"
     car.addImage("normal",carImg);
 }
 let left = false;
@@ -89,30 +87,56 @@ let up = false;
 let down = false;
 function explosion(){
     console.log("Explosion!")
-    remove(car)
     setTimeout(()=>{
-        location.href = "gameover.html"
+        // location.href = "gameover.html"
     })
 }
 // Our draw function here which runs over and over again: 
+let i = true;
 function draw(){
-    background(255);
-    if(left){ 
-        if(car.rotation >= -90){
+    background(0);
+    if(left){
+        // Important note : We put these if statements to make sure that our car is not rotating a full circle when moving up or down. It is only rotating as much as it needs : 
+        // If the car is moving up then rotate it counter-clockwise: 
+        if(movingUp){
+            if(car.rotation < -90){
+                car.rotation = -90;
+            }
             car.rotationSpeed = -carRotationAngle;
-        }
-        if(car.rotation <= -90){
-            car.rotation = -90;
+        }  
+        // if the car is moving down then rotate it clockwise : 
+        if(movingDown){
+            if(car.rotation < 270){
+                car.rotationSpeed = carRotationAngle
+            }
+            if(car.rotation > 270){
+                car.rotationSpeed = 0;
+            }
         }
         car.vel.x = -carVelx;
         car.vel.y = 0;  
     }
     else if(right){
-        if(car.rotation <= 90){
+        if(movingUp){
+            if(car.rotation > 90){
+                car.rotation = 90;
+            }
             car.rotationSpeed = carRotationAngle;
+        }  
+        // if the car is moving down then rotate it clockwise : 
+        if(movingDown){
+            if(car.rotation > -270){
+                car.rotationSpeed = -carRotationAngle
+            }
+            if(car.rotation < 90){
+                car.rotationSpeed = 0;
+            }
         }
-        if(car.rotation >= 90){
-            car.rotation = 90;
+        setTimeout(()=>{
+            i = false;
+        },20)
+        if(i){
+            car.rotation -= 8;
         }
         car.vel.x = carVelx;
         car.vel.y = 0;
@@ -123,36 +147,42 @@ function draw(){
         car.vel.y = -carVely;
     }
     else if(down){
+        car.rotation = 180
         car.vel.x = 0;
         car.vel.y = carVely;
-        car.rotation = 180
     }
 	if (kb.pressed('ArrowLeft')) {
-        car.rotation = -90
         left = true;
         up = false;
         down = false;
         right = false;
 	} 
-    else if (kb.pressed('ArrowRight')) {
+    else if (kb.pressed('ArrowRight')) {   
         right = true;
         up = false;
         down = false;
         left = false;
     }
     else if (kb.pressed('ArrowUp')) {
+        movingUp = true;
+        movingDown = false;
         up = true;
         right = false;
         left = false;
         down = false;
 	} 
     else if (kb.pressed('ArrowDown')) {
+        movingDown = true;
+        movingUp = false;
         down = true;
         right = false;
         up = false;
         left = false;
     }
     car.collide(grass,explosion)
+    car.collide(finish,()=>{
+        // location.href = "win.html"
+    })
 }
 
 
