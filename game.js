@@ -14,6 +14,8 @@ let str1;
 let map = [];
 let mapConfig = [];
 let car;
+let carWidth = 20;
+let carHeight = 10;
 let carVelx = 4.5;
 let carVely = 4.5;
 let carRotationAngle = 8;
@@ -89,9 +91,9 @@ function setup(){
 		tileWidth - (tileWidth / 2) -40,
 		tileHeight + 5,
 	);
-    car = createSprite(finish[0].x, finish[0].y - 50, 40, 10);
+    car = createSprite(finish[0].x, finish[0].y - 50, carWidth, carHeight);
     car.collider = "dynamic"
-    car.addImage("normal",carImg);
+    car.addImage("normal",carImg);s
 }
 let left = false;
 let right = false;
