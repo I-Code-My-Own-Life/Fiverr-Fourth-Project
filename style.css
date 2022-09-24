@@ -6,3 +6,12 @@ body{
     overflow: hidden;
     box-sizing: border-box;
 }
+#counter{
+    position: absolute;
+    color: white;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 200px;
+    text-align: center;
+    top: 30%;
+    left: 45%;  
+}

@@ -1,4 +1,3 @@
-let canvas = document.getElementById("defaultCanvas0");
 let txt;
 let grass;
 let grassImg;
@@ -15,22 +14,36 @@ let str1;
 let map = [];
 let mapConfig = [];
 let car;
-let carVelx = 3.5;
-let carVely = 3.5;
-let carRotationAngle = 10;
+let carVelx = 4.5;
+let carVely = 4.5;
+let carRotationAngle = 8;
 let finishImg;
 let finish;
 let movingUp = false;
 let movingDown = false;
+let counter = document.getElementById("counter");
+let number = 3;
+counter.innerText = number;
+let op = 0.8
+document.body.style.opacity = op
+setInterval(()=>{
+    number--
+    op+=0.08
+    document.body.style.opacity = op
+    counter.innerText = number;
+    if(number < 0){
+        counter.innerText = ""
+    }
+},1000)
 // Preload function is used to load all the sound and the images. It is ran before the setup and draw functions : 
 function preload(){
     // This txt variable is our data that we are going to read from the track.txt file :
     txt = loadStrings("track.txt")
     // Loading the images : 
-    tileImg = loadImage("track.png");
-    carImg = loadImage("car.png");
-    grassImg = loadImage("grass.png");
-    finishImg = loadImage('finishline.jpeg')
+    tileImg = loadImage("Assets/track.png");
+    carImg = loadImage("Assets/car.png");
+    grassImg = loadImage("Assets/grass.png");
+    finishImg = loadImage('Assets/finishline.jpeg')
 }
 // Our setup function which runs only once : 
 function setup(){
@@ -52,8 +65,7 @@ function setup(){
 	grass.w = grassWidth;
 	grass.h = grassHeight; 
     grass.addImage("normal",grassImg)
-    // grass.collider = "static"
-    grass.collider = "none"
+    grass.collider = "static"
 	grass.tile = '0';
     // Creating our tiles : 
     tiles = new Group();
@@ -78,7 +90,7 @@ function setup(){
 		tileHeight + 5,
 	);
     car = createSprite(finish[0].x, finish[0].y - 50, 40, 10);
-    // car.collider = "dynamic"
+    car.collider = "dynamic"
     car.addImage("normal",carImg);
 }
 let left = false;
@@ -86,13 +98,13 @@ let right = false;
 let up = false;
 let down = false;
 function explosion(){
-    console.log("Explosion!")
     setTimeout(()=>{
-        // location.href = "gameover.html"
+        location.href = "gameover.html"
     })
 }
 // Our draw function here which runs over and over again: 
 let i = true;
+let j = true;
 function draw(){
     background(0);
     if(left){
@@ -112,6 +124,12 @@ function draw(){
             if(car.rotation > 270){
                 car.rotationSpeed = 0;
             }
+            if(i){
+                car.rotation -= 18;
+            }
+            setTimeout(()=>{
+                i = false;
+            },20)
         }
         car.vel.x = -carVelx;
         car.vel.y = 0;  
@@ -131,12 +149,12 @@ function draw(){
             if(car.rotation < 90){
                 car.rotationSpeed = 0;
             }
-        }
-        setTimeout(()=>{
-            i = false;
-        },20)
-        if(i){
-            car.rotation -= 8;
+            if(i){
+                car.rotation -= 18;
+            }
+            setTimeout(()=>{
+                i = false;
+            },20)
         }
         car.vel.x = carVelx;
         car.vel.y = 0;
@@ -181,7 +199,7 @@ function draw(){
     }
     car.collide(grass,explosion)
     car.collide(finish,()=>{
-        // location.href = "win.html"
+        location.href = "win.html"
     })
 }
 
